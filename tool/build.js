@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const IGNORED = new Set(['.DS_Store', 'Thumbs.db', '.git', '.github', 'node_modules', 'tool', 'package.json', 'package-lock.json', '.gitignore', 'tree.json', 'index.html', 'LICENSE', 'README.md']);
+const IGNORED = new Set(['.DS_Store', 'Thumbs.db', '.git', '.github', 'node_modules', 'tool', 'package.json', 'package-lock.json', '.gitignore', 'tree.json', 'index.html', 'LICENSE', 'README.md', '_site']);
 
 function buildTree(dirPath, relativeTo) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
@@ -43,12 +43,44 @@ function countFiles(nodes) {
   return count;
 }
 
-// Build the tree
-const tree = buildTree(ROOT, ROOT);
-const fileCount = countFiles(tree);
-const rootName = path.basename(ROOT);
+function countDirs(nodes) {
+  let count = 0;
+  for (const node of nodes) {
+    if (node.type === 'directory') {
+      count++;
+      if (node.children) count += countDirs(node.children);
+    }
+  }
+  return count;
+}
 
-const manifest = { root: rootName, tree };
+// Discover projects: each top-level directory is a project
+const rootEntries = fs.readdirSync(ROOT, { withFileTypes: true });
+const projects = [];
+
+for (const entry of rootEntries) {
+  if (!entry.isDirectory()) continue;
+  if (IGNORED.has(entry.name) || entry.name.startsWith('.')) continue;
+
+  const projectDir = path.join(ROOT, entry.name);
+  const tree = buildTree(projectDir, projectDir);
+  const fileCount = countFiles(tree);
+  const dirCount = countDirs(tree);
+
+  if (fileCount === 0) continue;
+
+  projects.push({
+    name: entry.name,
+    path: entry.name,
+    fileCount,
+    dirCount,
+    tree,
+  });
+}
+
+projects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+const manifest = { projects };
 
 // Write tree.json
 const outPath = path.join(ROOT, 'tree.json');
@@ -59,7 +91,11 @@ const src = path.join(__dirname, 'public', 'index.html');
 const dest = path.join(ROOT, 'index.html');
 fs.copyFileSync(src, dest);
 
+const totalFiles = projects.reduce((sum, p) => sum + p.fileCount, 0);
 console.log(`\n  \x1b[32m grove build \x1b[0m`);
-console.log(`  \x1b[90m${fileCount} files indexed across ${tree.length} top-level directories\x1b[0m`);
+console.log(`  \x1b[90m${projects.length} project(s), ${totalFiles} total files\x1b[0m`);
+for (const p of projects) {
+  console.log(`  \x1b[90m  ${p.name} (${p.fileCount} files, ${p.dirCount} folders)\x1b[0m`);
+}
 console.log(`  \x1b[90m  -> tree.json\x1b[0m`);
 console.log(`  \x1b[90m  -> index.html\x1b[0m\n`);

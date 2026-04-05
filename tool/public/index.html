@@ -50,6 +50,12 @@
       height: 100vh;
     }
 
+    #app.no-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    #app.no-sidebar #sidebar { display: none; }
+
     /* ── Header ─────────────────────────────── */
     #header {
       grid-column: 1 / -1;
@@ -62,7 +68,7 @@
       z-index: 10;
     }
 
-    #header .logo {
+    .logo {
       font-size: 16px;
       font-weight: 600;
       color: var(--accent);
@@ -70,12 +76,12 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
     }
 
-    #header .logo svg {
-      width: 20px;
-      height: 20px;
-    }
+    .logo svg { width: 20px; height: 20px; }
 
     #breadcrumb {
       display: flex;
@@ -141,14 +147,101 @@
       background: var(--bg-surface);
       border-right: 1px solid var(--border);
       overflow-y: auto;
-      padding: 12px 0;
+      padding: 0;
       scrollbar-width: thin;
       scrollbar-color: var(--border) transparent;
+      display: flex;
+      flex-direction: column;
     }
 
     #sidebar::-webkit-scrollbar { width: 6px; }
     #sidebar::-webkit-scrollbar-track { background: transparent; }
     #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Sidebar project header ──────────────── */
+    .sidebar-project-header {
+      padding: 12px 12px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .project-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+      position: relative;
+    }
+
+    .project-switcher:hover { background: var(--bg-hover); }
+
+    .project-switcher .project-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .project-switcher .switcher-chevron {
+      width: 14px;
+      height: 14px;
+      color: var(--text-faint);
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+
+    .project-switcher.open .switcher-chevron { transform: rotate(180deg); }
+
+    .switcher-dropdown {
+      display: none;
+      margin-top: 4px;
+      border-radius: 6px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .switcher-dropdown.open { display: block; }
+
+    .switcher-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .switcher-option:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .switcher-option.active {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .switcher-option .opt-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-faint);
+    }
+
+    #sidebar-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
 
     .tree-group { margin-bottom: 2px; }
 
@@ -163,7 +256,6 @@
       font-weight: 500;
       user-select: none;
       transition: background 0.12s, color 0.12s;
-      border-radius: 0;
     }
 
     .tree-dir:hover {
@@ -211,12 +303,7 @@
       font-weight: 500;
     }
 
-    .tree-file .file-icon {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-
+    .tree-file .file-icon { width: 15px; height: 15px; flex-shrink: 0; }
     .tree-file .file-icon.md { color: var(--cyan); }
     .tree-file .file-icon.yaml { color: var(--amber); }
     .tree-file .file-icon.other { color: var(--text-faint); }
@@ -233,41 +320,131 @@
     #content::-webkit-scrollbar-track { background: transparent; }
     #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    /* ── Welcome screen ──────────────────────── */
-    #welcome {
+    /* ── Landing page ────────────────────────── */
+    .landing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .landing .landing-logo {
+      color: var(--accent);
+      opacity: 0.4;
+      margin-bottom: 24px;
+    }
+
+    .landing .landing-logo svg { width: 56px; height: 56px; }
+
+    .landing h1 {
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .landing h1 strong { font-weight: 600; color: var(--accent); }
+
+    .landing .landing-sub {
+      font-size: 14px;
+      color: var(--text-faint);
+      margin-bottom: 40px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .project-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(124, 111, 234, 0.1);
+    }
+
+    .project-card .card-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-card .card-name svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .project-card .card-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    .project-card .card-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .project-card .card-stat .n {
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* ── Project welcome (file not selected) ── */
+    .project-welcome {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
       color: var(--text-faint);
-      gap: 16px;
+      gap: 12px;
     }
 
-    #welcome svg { width: 64px; height: 64px; opacity: 0.3; }
-    #welcome p { font-size: 15px; }
-    #welcome .root-name { color: var(--text-dim); font-weight: 500; font-size: 18px; }
+    .project-welcome svg { width: 48px; height: 48px; opacity: 0.25; }
+    .project-welcome .pw-name { color: var(--text-dim); font-weight: 500; font-size: 18px; }
+    .project-welcome p { font-size: 14px; }
 
-    #welcome .stats {
+    .project-welcome .pw-stats {
       display: flex;
       gap: 24px;
-      margin-top: 8px;
+      margin-top: 4px;
       font-size: 13px;
     }
 
-    #welcome .stat {
+    .project-welcome .pw-stat {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    #welcome .stat .num { color: var(--accent); font-weight: 600; font-size: 20px; }
+    .project-welcome .pw-stat .num { color: var(--accent); font-weight: 600; font-size: 20px; }
 
     /* ── File header bar ─────────────────────── */
     .file-header {
       position: sticky;
       top: 0;
-      background: var(--bg);
       border-bottom: 1px solid var(--border-subtle);
       padding: 10px 32px;
       display: flex;
@@ -319,7 +496,6 @@
     .frontmatter .fm-bool { color: var(--rose); }
     .frontmatter .fm-null { color: var(--text-faint); font-style: italic; }
     .frontmatter .fm-comment { color: var(--text-faint); }
-    .frontmatter .fm-indent { color: transparent; }
 
     /* ── Rendered markdown ────────────────────── */
     .rendered {
@@ -336,29 +512,10 @@
       border-bottom: 2px solid var(--border);
     }
 
-    .rendered h2 {
-      font-size: 20px;
-      font-weight: 600;
-      color: #dcdce8;
-      margin: 32px 0 12px;
-    }
-
-    .rendered h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #c0c0d4;
-      margin: 24px 0 8px;
-    }
-
-    .rendered h4 {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-dim);
-      margin: 20px 0 6px;
-    }
-
+    .rendered h2 { font-size: 20px; font-weight: 600; color: #dcdce8; margin: 32px 0 12px; }
+    .rendered h3 { font-size: 16px; font-weight: 600; color: #c0c0d4; margin: 24px 0 8px; }
+    .rendered h4 { font-size: 14px; font-weight: 600; color: var(--text-dim); margin: 20px 0 6px; }
     .rendered p { margin: 0 0 12px; }
-
     .rendered strong { color: #ececf4; font-weight: 600; }
     .rendered em { font-style: italic; color: var(--text-dim); }
 
@@ -370,19 +527,11 @@
     }
     .rendered a:hover { border-bottom-color: var(--accent); }
 
-    .rendered ul, .rendered ol {
-      margin: 0 0 12px;
-      padding-left: 24px;
-    }
-
+    .rendered ul, .rendered ol { margin: 0 0 12px; padding-left: 24px; }
     .rendered li { margin: 2px 0; }
     .rendered li::marker { color: var(--text-faint); }
 
-    .rendered hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 24px 0;
-    }
+    .rendered hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 
     .rendered blockquote {
       border-left: 3px solid var(--accent);
@@ -420,12 +569,7 @@
     }
 
     /* ── Tables ──────────────────────────────── */
-    .rendered table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 12px 0 20px;
-      font-size: 13px;
-    }
+    .rendered table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
 
     .rendered thead th {
       text-align: left;
@@ -445,7 +589,6 @@
     }
 
     .rendered tbody tr:hover { background: var(--bg-hover); }
-
     .rendered tbody td strong { color: var(--text); }
 
     /* ── YAML full-file rendering ────────────── */
@@ -495,21 +638,6 @@
 
     .fade-in { animation: fadeIn 0.2s ease-out; }
 
-    /* ── Search results ──────────────────────── */
-    .search-results {
-      padding: 8px 0;
-    }
-
-    .search-result-group {
-      padding: 4px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-faint);
-      margin-top: 4px;
-    }
-
     /* ── Responsive ──────────────────────────── */
     @media (max-width: 768px) {
       :root { --sidebar-width: 0px; }
@@ -517,13 +645,14 @@
       .rendered { padding: 20px 16px 64px; }
       .frontmatter { margin: 16px 16px 0; }
       .yaml-content { padding: 20px 16px 64px; }
+      .landing { padding: 40px 16px; }
     }
   </style>
 </head>
 <body>
-  <div id="app">
+  <div id="app" class="no-sidebar">
     <header id="header">
-      <div class="logo">
+      <div class="logo" id="logo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2L2 7l10 5 10-5-10-5z"/>
           <path d="M2 17l10 5 10-5"/>
@@ -540,103 +669,210 @@
       </div>
     </header>
     <nav id="sidebar"></nav>
-    <main id="content">
-      <div id="welcome">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
-        <div class="root-name" id="root-name"></div>
-        <p>Select a file from the sidebar to view</p>
-        <div class="stats" id="stats"></div>
-      </div>
-    </main>
+    <main id="content"></main>
   </div>
 
   <script>
-    const md = window.markdownit({
-      html: true,
-      linkify: true,
-      typographer: true,
-    });
+    const md = window.markdownit({ html: true, linkify: true, typographer: true });
 
-    // Customize link rendering for wiki-links [[...]]
-    const defaultRender = md.renderer.rules.text || function(tokens, idx) {
-      return md.utils.escapeHtml(tokens[idx].content);
-    };
-    md.renderer.rules.text = function(tokens, idx, options, env, self) {
+    md.renderer.rules.text = function(tokens, idx) {
       const text = tokens[idx].content;
-      // Convert [[link|label]] or [[link]] to rendered text
       return text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, link, label) => {
+        return `<em>${md.utils.escapeHtml(label || link)}</em>`;
+      }).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c))
+        // undo double-escape: the replace above re-escapes, but markdownit already does it
+        // actually let's just use the simple approach
+    };
+    // Simpler: override text to just handle wiki-links
+    md.renderer.rules.text = function(tokens, idx) {
+      const raw = tokens[idx].content;
+      const escaped = md.utils.escapeHtml(raw);
+      return escaped.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, link, label) => {
         return `<em>${label || link}</em>`;
       });
     };
 
-    let treeData = [];
-    let allFiles = [];
-    let rootName = '';
+    // ── State ─────────────────────────────────
+    let projects = [];
+    let currentProject = null;
     let activeFilePath = null;
     let isStatic = false;
 
-    // ── Mode detection ────────────────────────
-    async function detectMode() {
-      try {
-        const res = await fetch('/api/tree');
-        if (res.ok) return 'server';
-      } catch {}
-      return 'static';
-    }
+    const ICON = {
+      layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+      folder: `<svg class="dir-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`,
+      chevron: `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`,
+      fileMd: `<svg class="file-icon md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg>`,
+      fileYaml: `<svg class="file-icon yaml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l2 3 2-3"/><path d="M10 16v3"/></svg>`,
+      fileOther: `<svg class="file-icon other" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>`,
+    };
 
     // ── Boot ──────────────────────────────────
     async function init() {
-      const mode = await detectMode();
-      isStatic = mode === 'static';
-
-      let data;
-      if (isStatic) {
-        const res = await fetch('tree.json');
-        data = await res.json();
-      } else {
+      try {
         const res = await fetch('/api/tree');
-        data = await res.json();
+        if (res.ok) {
+          // Server mode — legacy single-project format
+          const data = await res.json();
+          if (data.projects) {
+            projects = data.projects;
+          } else {
+            projects = [{ name: data.root, path: '', fileCount: flattenFiles(data.tree).length, dirCount: countDirs(data.tree), tree: data.tree }];
+          }
+          isStatic = false;
+        }
+      } catch {
+        const res = await fetch('tree.json');
+        const data = await res.json();
+        projects = data.projects || [];
+        isStatic = true;
       }
 
-      treeData = data.tree;
-      rootName = data.root;
-
-      document.title = `Grove - ${rootName}`;
-      document.getElementById('root-name').textContent = rootName;
-
-      allFiles = flattenFiles(treeData);
-      const dirs = countDirs(treeData);
-      document.getElementById('stats').innerHTML = `
-        <div class="stat"><span class="num">${allFiles.length}</span> files</div>
-        <div class="stat"><span class="num">${dirs}</span> folders</div>
-      `;
-
-      renderTree(treeData, document.getElementById('sidebar'), 0);
+      document.getElementById('logo').onclick = () => goHome();
       setupSearch();
+
+      if (projects.length === 1) {
+        enterProject(projects[0]);
+      } else {
+        goHome();
+      }
     }
 
     function flattenFiles(nodes) {
       const files = [];
-      for (const node of nodes) {
-        if (node.type === 'file') files.push(node);
-        else if (node.children) files.push(...flattenFiles(node.children));
+      for (const n of nodes) {
+        if (n.type === 'file') files.push(n);
+        else if (n.children) files.push(...flattenFiles(n.children));
       }
       return files;
     }
 
     function countDirs(nodes) {
-      let count = 0;
-      for (const node of nodes) {
-        if (node.type === 'directory') {
-          count++;
-          if (node.children) count += countDirs(node.children);
-        }
+      let c = 0;
+      for (const n of nodes) {
+        if (n.type === 'directory') { c++; if (n.children) c += countDirs(n.children); }
       }
-      return count;
+      return c;
+    }
+
+    // ── Landing (project list) ────────────────
+    function goHome() {
+      currentProject = null;
+      activeFilePath = null;
+
+      document.getElementById('app').classList.add('no-sidebar');
+      document.getElementById('breadcrumb').innerHTML = '';
+      document.getElementById('sidebar').innerHTML = '';
+      document.title = 'Grove';
+
+      const content = document.getElementById('content');
+      let html = `<div class="landing fade-in">`;
+      html += `<div class="landing-logo">${ICON.layers}</div>`;
+      html += `<h1><strong>Grove</strong></h1>`;
+      html += `<p class="landing-sub">${projects.length} project${projects.length !== 1 ? 's' : ''}</p>`;
+      html += `<div class="project-grid">`;
+
+      for (const p of projects) {
+        html += `
+          <div class="project-card" onclick="enterProject(projects.find(x=>x.name==='${escapeAttr(p.name)}'))">
+            <div class="card-name">
+              ${ICON.folder}
+              ${escapeHtml(formatName(p.name))}
+            </div>
+            <div class="card-stats">
+              <div class="card-stat"><span class="n">${p.fileCount}</span> files</div>
+              <div class="card-stat"><span class="n">${p.dirCount}</span> folders</div>
+            </div>
+          </div>`;
+      }
+
+      html += `</div></div>`;
+      content.innerHTML = html;
+      content.scrollTop = 0;
+    }
+
+    // ── Enter a project ───────────────────────
+    function enterProject(project) {
+      currentProject = project;
+      activeFilePath = null;
+
+      document.getElementById('app').classList.remove('no-sidebar');
+      document.title = `Grove - ${formatName(project.name)}`;
+
+      // Build sidebar
+      const sidebar = document.getElementById('sidebar');
+      sidebar.innerHTML = '';
+
+      // Project header with switcher
+      if (projects.length > 1) {
+        const header = document.createElement('div');
+        header.className = 'sidebar-project-header';
+
+        const switcher = document.createElement('div');
+        switcher.className = 'project-switcher';
+        switcher.innerHTML = `
+          ${ICON.folder}
+          <span class="project-label">${escapeHtml(formatName(project.name))}</span>
+          <svg class="switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        `;
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'switcher-dropdown';
+
+        for (const p of projects) {
+          const opt = document.createElement('div');
+          opt.className = 'switcher-option' + (p.name === project.name ? ' active' : '');
+          opt.innerHTML = `${escapeHtml(formatName(p.name))}<span class="opt-meta">${p.fileCount} files</span>`;
+          opt.onclick = (e) => { e.stopPropagation(); enterProject(p); };
+          dropdown.appendChild(opt);
+        }
+
+        switcher.onclick = () => {
+          switcher.classList.toggle('open');
+          dropdown.classList.toggle('open');
+        };
+
+        header.appendChild(switcher);
+        header.appendChild(dropdown);
+        sidebar.appendChild(header);
+      }
+
+      // File tree
+      const treeContainer = document.createElement('div');
+      treeContainer.id = 'sidebar-tree';
+      renderTree(project.tree, treeContainer, 0);
+      sidebar.appendChild(treeContainer);
+
+      // Breadcrumb
+      updateBreadcrumb();
+
+      // Content: project welcome
+      showProjectWelcome();
+    }
+
+    function showProjectWelcome() {
+      const p = currentProject;
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="project-welcome fade-in">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <div class="pw-name">${escapeHtml(formatName(p.name))}</div>
+          <p>Select a file from the sidebar</p>
+          <div class="pw-stats">
+            <div class="pw-stat"><span class="num">${p.fileCount}</span> files</div>
+            <div class="pw-stat"><span class="num">${p.dirCount}</span> folders</div>
+          </div>
+        </div>
+      `;
+      content.scrollTop = 0;
+
+      activeFilePath = null;
+      document.querySelectorAll('.tree-file').forEach(el => el.classList.remove('active'));
+      updateBreadcrumb();
     }
 
     // ── Tree rendering ────────────────────────
@@ -649,11 +885,7 @@
           const dir = document.createElement('div');
           dir.className = 'tree-dir';
           dir.style.setProperty('--depth', depth);
-          dir.innerHTML = `
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            <svg class="dir-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-            <span>${node.name}</span>
-          `;
+          dir.innerHTML = `${ICON.chevron}${ICON.folder}<span>${escapeHtml(node.name)}</span>`;
           dir.onclick = () => dir.classList.toggle('collapsed');
 
           const children = document.createElement('div');
@@ -670,18 +902,9 @@
           file.style.setProperty('--depth', depth);
 
           const ext = node.name.split('.').pop().toLowerCase();
-          const iconClass = ext === 'md' ? 'md' : (ext === 'yaml' || ext === 'yml') ? 'yaml' : 'other';
+          const icon = ext === 'md' ? ICON.fileMd : (ext === 'yaml' || ext === 'yml') ? ICON.fileYaml : ICON.fileOther;
 
-          let iconSvg;
-          if (iconClass === 'md') {
-            iconSvg = `<svg class="file-icon md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg>`;
-          } else if (iconClass === 'yaml') {
-            iconSvg = `<svg class="file-icon yaml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l2 3 2-3"/><path d="M10 16v3"/></svg>`;
-          } else {
-            iconSvg = `<svg class="file-icon other" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>`;
-          }
-
-          file.innerHTML = `${iconSvg}<span>${node.name}</span>`;
+          file.innerHTML = `${icon}<span>${escapeHtml(node.name)}</span>`;
           file.onclick = () => loadFile(node.path);
           container.appendChild(file);
         }
@@ -692,90 +915,78 @@
     async function loadFile(filePath) {
       activeFilePath = filePath;
 
-      // Update active state in sidebar
       document.querySelectorAll('.tree-file').forEach(el => {
         el.classList.toggle('active', el.dataset.path === filePath);
       });
 
-      // Expand parent directories
+      // Expand parents
       const activeEl = document.querySelector(`.tree-file[data-path="${CSS.escape(filePath)}"]`);
       if (activeEl) {
         let parent = activeEl.parentElement;
-        while (parent && parent.id !== 'sidebar') {
+        while (parent && parent.id !== 'sidebar-tree') {
           if (parent.classList.contains('tree-children')) {
             const dir = parent.previousElementSibling;
-            if (dir && dir.classList.contains('tree-dir')) {
-              dir.classList.remove('collapsed');
-            }
+            if (dir && dir.classList.contains('tree-dir')) dir.classList.remove('collapsed');
           }
           parent = parent.parentElement;
         }
         activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
 
-      // Update breadcrumb
       updateBreadcrumb(filePath);
 
-      // Fetch and render
       let data;
       if (isStatic) {
-        const res = await fetch(encodeURI(filePath));
+        const fetchPath = currentProject.path ? `${currentProject.path}/${filePath}` : filePath;
+        const res = await fetch(encodeURI(fetchPath));
         const content = await res.text();
         const ext = '.' + filePath.split('.').pop().toLowerCase();
         data = { path: filePath, ext, content };
       } else {
-        const res = await fetch(`/api/file?path=${encodeURIComponent(filePath)}`);
+        const fetchPath = currentProject.path ? `${currentProject.path}/${filePath}` : filePath;
+        const res = await fetch(`/api/file?path=${encodeURIComponent(fetchPath)}`);
         data = await res.json();
       }
       renderFile(data);
     }
 
+    // ── Breadcrumb ────────────────────────────
     function updateBreadcrumb(filePath) {
-      const parts = filePath.split('/');
       const bc = document.getElementById('breadcrumb');
       bc.innerHTML = '';
 
-      const rootSpan = document.createElement('span');
-      rootSpan.textContent = rootName;
-      rootSpan.onclick = () => showWelcome();
-      bc.appendChild(rootSpan);
+      if (projects.length > 1) {
+        const home = document.createElement('span');
+        home.textContent = 'Grove';
+        home.onclick = () => goHome();
+        bc.appendChild(home);
+        bc.appendChild(makeSep());
+      }
 
-      for (let i = 0; i < parts.length; i++) {
-        const sep = document.createElement('span');
-        sep.className = 'sep';
-        sep.textContent = '/';
-        bc.appendChild(sep);
+      if (currentProject) {
+        const proj = document.createElement('span');
+        proj.textContent = formatName(currentProject.name);
+        proj.onclick = () => showProjectWelcome();
+        bc.appendChild(proj);
 
-        const span = document.createElement('span');
-        span.textContent = parts[i];
-        if (i < parts.length - 1) {
-          // Could navigate to directory, but for now just label
-          span.style.cursor = 'default';
+        if (filePath) {
+          const parts = filePath.split('/');
+          for (let i = 0; i < parts.length; i++) {
+            bc.appendChild(makeSep());
+            const span = document.createElement('span');
+            span.textContent = parts[i];
+            if (i < parts.length - 1) span.style.cursor = 'default';
+            bc.appendChild(span);
+          }
         }
-        bc.appendChild(span);
       }
     }
 
-    function showWelcome() {
-      activeFilePath = null;
-      document.querySelectorAll('.tree-file').forEach(el => el.classList.remove('active'));
-      document.getElementById('breadcrumb').innerHTML = '';
-      const content = document.getElementById('content');
-      content.innerHTML = `
-        <div id="welcome">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-          </svg>
-          <div class="root-name">${rootName}</div>
-          <p>Select a file from the sidebar to view</p>
-          <div class="stats">
-            <div class="stat"><span class="num">${allFiles.length}</span> files</div>
-            <div class="stat"><span class="num">${countDirs(treeData)}</span> folders</div>
-          </div>
-        </div>
-      `;
+    function makeSep() {
+      const s = document.createElement('span');
+      s.className = 'sep';
+      s.textContent = '/';
+      return s;
     }
 
     // ── Rendering ─────────────────────────────
@@ -784,224 +995,110 @@
       const ext = data.ext.toLowerCase();
       const fileName = data.path.split('/').pop();
 
-      if (ext === '.md') {
-        renderMarkdown(content, data.content, fileName);
-      } else if (ext === '.yaml' || ext === '.yml') {
-        renderYaml(content, data.content, fileName);
-      } else {
-        renderPlainText(content, data.content, fileName);
-      }
+      if (ext === '.md') renderMarkdown(content, data.content, fileName);
+      else if (ext === '.yaml' || ext === '.yml') renderYaml(content, data.content, fileName);
+      else renderPlainText(content, data.content, fileName);
 
       content.scrollTop = 0;
     }
 
     function renderMarkdown(container, raw, fileName) {
-      // Extract YAML frontmatter
-      let frontmatter = null;
-      let body = raw;
-
+      let frontmatter = null, body = raw;
       const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-      if (fmMatch) {
-        frontmatter = fmMatch[1];
-        body = fmMatch[2];
-      }
+      if (fmMatch) { frontmatter = fmMatch[1]; body = fmMatch[2]; }
 
       let html = `<div class="fade-in">`;
       html += `<div class="file-header"><span class="tag md">MD</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
-
-      if (frontmatter) {
-        html += `<div class="frontmatter">${highlightYaml(frontmatter)}</div>`;
-      }
-
-      html += `<div class="rendered">${md.render(body)}</div>`;
-      html += `</div>`;
-
+      if (frontmatter) html += `<div class="frontmatter">${highlightYaml(frontmatter)}</div>`;
+      html += `<div class="rendered">${md.render(body)}</div></div>`;
       container.innerHTML = html;
 
-      // Enable task list checkboxes (visual only)
       container.querySelectorAll('li').forEach(li => {
-        const text = li.innerHTML;
-        if (text.startsWith('[ ] ')) {
-          li.innerHTML = `<input type="checkbox" disabled />${text.slice(4)}`;
-        } else if (text.startsWith('[x] ') || text.startsWith('[X] ')) {
-          li.innerHTML = `<input type="checkbox" checked disabled />${text.slice(4)}`;
-        }
+        const t = li.innerHTML;
+        if (t.startsWith('[ ] ')) li.innerHTML = `<input type="checkbox" disabled />${t.slice(4)}`;
+        else if (t.startsWith('[x] ') || t.startsWith('[X] ')) li.innerHTML = `<input type="checkbox" checked disabled />${t.slice(4)}`;
       });
     }
 
     function renderYaml(container, raw, fileName) {
-      let html = `<div class="fade-in">`;
-      html += `<div class="file-header"><span class="tag yaml">YAML</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
-      html += `<div class="yaml-content">${highlightYaml(raw)}</div>`;
-      html += `</div>`;
-      container.innerHTML = html;
+      container.innerHTML = `<div class="fade-in"><div class="file-header"><span class="tag yaml">YAML</span><span class="file-name">${escapeHtml(fileName)}</span></div><div class="yaml-content">${highlightYaml(raw)}</div></div>`;
     }
 
     function renderPlainText(container, raw, fileName) {
-      let html = `<div class="fade-in">`;
-      html += `<div class="file-header"><span class="tag other">TXT</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
-      html += `<div class="yaml-content">${escapeHtml(raw)}</div>`;
-      html += `</div>`;
-      container.innerHTML = html;
+      container.innerHTML = `<div class="fade-in"><div class="file-header"><span class="tag other">TXT</span><span class="file-name">${escapeHtml(fileName)}</span></div><div class="yaml-content">${escapeHtml(raw)}</div></div>`;
     }
 
     // ── YAML syntax highlighting ──────────────
     function highlightYaml(text) {
       return text.split('\n').map(line => {
-        // Comment lines
-        if (line.match(/^\s*#/)) {
-          return `<span class="y-comment">${escapeHtml(line)}</span>`;
+        if (line.match(/^\s*#/)) return `<span class="y-comment">${escapeHtml(line)}</span>`;
+        const kv = line.match(/^(\s*)([\w][\w\-./]*)\s*(:)(.*)/);
+        if (kv) return escapeHtml(kv[1]) + `<span class="y-key">${escapeHtml(kv[2])}</span><span class="y-punct">${kv[3]}</span>` + hlVal(kv[4]);
+        const li = line.match(/^(\s*)(- )(.*)/);
+        if (li) {
+          const ik = li[3].match(/^([\w][\w\-./]*)\s*(:)(.*)/);
+          if (ik) return escapeHtml(li[1]) + `<span class="y-punct">${li[2]}</span><span class="y-key">${escapeHtml(ik[1])}</span><span class="y-punct">${ik[2]}</span>` + hlVal(ik[3]);
+          return escapeHtml(li[1]) + `<span class="y-punct">${li[2]}</span>` + hlVal(li[3]);
         }
-
-        // Key-value pairs
-        const kvMatch = line.match(/^(\s*)([\w][\w\-./]*)\s*(:)(.*)/);
-        if (kvMatch) {
-          const [, indent, key, colon, rest] = kvMatch;
-          return escapeHtml(indent) +
-            `<span class="y-key">${escapeHtml(key)}</span>` +
-            `<span class="y-punct">${colon}</span>` +
-            highlightYamlValue(rest);
-        }
-
-        // List items
-        const listMatch = line.match(/^(\s*)(- )(.*)/);
-        if (listMatch) {
-          const [, indent, dash, rest] = listMatch;
-          // Check if list item has a key
-          const itemKv = rest.match(/^([\w][\w\-./]*)\s*(:)(.*)/);
-          if (itemKv) {
-            return escapeHtml(indent) +
-              `<span class="y-punct">${dash}</span>` +
-              `<span class="y-key">${escapeHtml(itemKv[1])}</span>` +
-              `<span class="y-punct">${itemKv[2]}</span>` +
-              highlightYamlValue(itemKv[3]);
-          }
-          return escapeHtml(indent) +
-            `<span class="y-punct">${dash}</span>` +
-            highlightYamlValue(rest);
-        }
-
         return escapeHtml(line);
       }).join('\n');
     }
 
-    function highlightYamlValue(val) {
+    function hlVal(val) {
       if (!val || !val.trim()) return escapeHtml(val);
-
-      const trimmed = val.trim();
-      const leading = val.slice(0, val.length - val.trimStart().length);
-
-      // Quoted strings
-      if (/^".*"$/.test(trimmed) || /^'.*'$/.test(trimmed)) {
-        return escapeHtml(leading) + `<span class="y-str">${escapeHtml(trimmed)}</span>`;
-      }
-      // Numbers
-      if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
-        return escapeHtml(leading) + `<span class="y-num">${escapeHtml(trimmed)}</span>`;
-      }
-      // Booleans
-      if (/^(true|false|yes|no)$/i.test(trimmed)) {
-        return escapeHtml(leading) + `<span class="y-bool">${escapeHtml(trimmed)}</span>`;
-      }
-      // Null
-      if (/^(null|~)$/i.test(trimmed)) {
-        return escapeHtml(leading) + `<span class="y-null">${escapeHtml(trimmed)}</span>`;
-      }
-      // Anchors/aliases
-      if (/^[&*]/.test(trimmed)) {
-        return escapeHtml(leading) + `<span class="y-anchor">${escapeHtml(trimmed)}</span>`;
-      }
-      // Inline comment
-      const commentIdx = trimmed.indexOf(' #');
-      if (commentIdx > 0) {
-        const before = trimmed.slice(0, commentIdx);
-        const comment = trimmed.slice(commentIdx);
-        return escapeHtml(leading) + highlightYamlValue(' ' + before).trim() + `<span class="y-comment">${escapeHtml(comment)}</span>`;
-      }
-      // Plain string values
-      if (trimmed.length > 0) {
-        return escapeHtml(leading) + `<span class="y-str">${escapeHtml(trimmed)}</span>`;
-      }
-
+      const t = val.trim(), lead = val.slice(0, val.length - val.trimStart().length);
+      if (/^".*"$/.test(t) || /^'.*'$/.test(t)) return escapeHtml(lead) + `<span class="y-str">${escapeHtml(t)}</span>`;
+      if (/^-?\d+(\.\d+)?$/.test(t)) return escapeHtml(lead) + `<span class="y-num">${escapeHtml(t)}</span>`;
+      if (/^(true|false|yes|no)$/i.test(t)) return escapeHtml(lead) + `<span class="y-bool">${escapeHtml(t)}</span>`;
+      if (/^(null|~)$/i.test(t)) return escapeHtml(lead) + `<span class="y-null">${escapeHtml(t)}</span>`;
+      if (/^[&*]/.test(t)) return escapeHtml(lead) + `<span class="y-anchor">${escapeHtml(t)}</span>`;
+      const ci = t.indexOf(' #');
+      if (ci > 0) return escapeHtml(lead) + hlVal(' ' + t.slice(0, ci)).trim() + `<span class="y-comment">${escapeHtml(t.slice(ci))}</span>`;
+      if (t.length > 0) return escapeHtml(lead) + `<span class="y-str">${escapeHtml(t)}</span>`;
       return escapeHtml(val);
     }
 
     // ── Search ────────────────────────────────
     function setupSearch() {
       const input = document.getElementById('search-input');
-      input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        filterTree(q);
-      });
-
-      // Keyboard shortcut: Cmd/Ctrl+K
+      input.addEventListener('input', () => filterTree(input.value.trim().toLowerCase()));
       document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          e.preventDefault();
-          input.focus();
-          input.select();
-        }
-        if (e.key === 'Escape' && document.activeElement === input) {
-          input.value = '';
-          filterTree('');
-          input.blur();
-        }
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); input.focus(); input.select(); }
+        if (e.key === 'Escape' && document.activeElement === input) { input.value = ''; filterTree(''); input.blur(); }
       });
     }
 
     function filterTree(query) {
-      const sidebar = document.getElementById('sidebar');
-
-      if (!query) {
-        // Show all
-        sidebar.querySelectorAll('.tree-file, .tree-group').forEach(el => {
-          el.style.display = '';
-        });
-        return;
-      }
-
-      // Hide non-matching files, show matching ones, expand their parents
-      sidebar.querySelectorAll('.tree-file').forEach(el => {
+      const container = document.getElementById('sidebar-tree');
+      if (!container) return;
+      if (!query) { container.querySelectorAll('.tree-file, .tree-group').forEach(el => el.style.display = ''); return; }
+      container.querySelectorAll('.tree-file').forEach(el => {
         const name = el.querySelector('span').textContent.toLowerCase();
         const path = el.dataset.path.toLowerCase();
         const matches = name.includes(query) || path.includes(query);
         el.style.display = matches ? '' : 'none';
-
         if (matches) {
-          // Expand parent directories
           let parent = el.parentElement;
-          while (parent && parent.id !== 'sidebar') {
+          while (parent && parent !== container) {
             if (parent.classList.contains('tree-children')) {
               parent.style.display = '';
               const dir = parent.previousElementSibling;
-              if (dir && dir.classList.contains('tree-dir')) {
-                dir.classList.remove('collapsed');
-                dir.style.display = '';
-              }
+              if (dir?.classList.contains('tree-dir')) { dir.classList.remove('collapsed'); dir.style.display = ''; }
             }
-            if (parent.classList.contains('tree-group')) {
-              parent.style.display = '';
-            }
+            if (parent.classList.contains('tree-group')) parent.style.display = '';
             parent = parent.parentElement;
           }
         }
       });
-
-      // Hide empty directories
-      sidebar.querySelectorAll('.tree-group').forEach(group => {
-        const visibleFiles = group.querySelectorAll('.tree-file:not([style*="display: none"])');
-        if (visibleFiles.length === 0) {
-          group.style.display = 'none';
-        }
+      container.querySelectorAll('.tree-group').forEach(g => {
+        if (!g.querySelectorAll('.tree-file:not([style*="display: none"])').length) g.style.display = 'none';
       });
     }
 
     // ── Utility ───────────────────────────────
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function escapeAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+    function formatName(s) { return s.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
 
     // ── Start ─────────────────────────────────
     init();
