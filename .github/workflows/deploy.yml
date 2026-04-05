@@ -1,0 +1,59 @@
+name: Build and Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build tree manifest
+        run: node tool/build.js
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site
+          # Copy the built index.html and tree.json
+          cp index.html _site/
+          cp tree.json _site/
+          # Copy all content directories (everything except tool scaffolding)
+          for dir in */; do
+            case "$dir" in
+              tool/|.git/|.github/|node_modules/|_site/) ;;
+              *) cp -r "$dir" "_site/$dir" ;;
+            esac
+          done
+          # Copy any top-level content files (not config files)
+          for f in *; do
+            [ -f "$f" ] || continue
+            case "$f" in
+              index.html|tree.json|package.json|package-lock.json|.gitignore|LICENSE|README.md) ;;
+              *) cp "$f" "_site/$f" ;;
+            esac
+          done
+
+      - uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

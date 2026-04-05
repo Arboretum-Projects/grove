@@ -577,11 +577,31 @@
     let allFiles = [];
     let rootName = '';
     let activeFilePath = null;
+    let isStatic = false;
+
+    // ── Mode detection ────────────────────────
+    async function detectMode() {
+      try {
+        const res = await fetch('/api/tree');
+        if (res.ok) return 'server';
+      } catch {}
+      return 'static';
+    }
 
     // ── Boot ──────────────────────────────────
     async function init() {
-      const res = await fetch('/api/tree');
-      const data = await res.json();
+      const mode = await detectMode();
+      isStatic = mode === 'static';
+
+      let data;
+      if (isStatic) {
+        const res = await fetch('tree.json');
+        data = await res.json();
+      } else {
+        const res = await fetch('/api/tree');
+        data = await res.json();
+      }
+
       treeData = data.tree;
       rootName = data.root;
 
@@ -697,8 +717,16 @@
       updateBreadcrumb(filePath);
 
       // Fetch and render
-      const res = await fetch(`/api/file?path=${encodeURIComponent(filePath)}`);
-      const data = await res.json();
+      let data;
+      if (isStatic) {
+        const res = await fetch(encodeURI(filePath));
+        const content = await res.text();
+        const ext = '.' + filePath.split('.').pop().toLowerCase();
+        data = { path: filePath, ext, content };
+      } else {
+        const res = await fetch(`/api/file?path=${encodeURIComponent(filePath)}`);
+        data = await res.json();
+      }
       renderFile(data);
     }
 
