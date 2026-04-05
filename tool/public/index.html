@@ -709,10 +709,12 @@
 
     // ── Boot ──────────────────────────────────
     async function init() {
+      let loaded = false;
+
+      // Try server mode first
       try {
         const res = await fetch('/api/tree');
         if (res.ok) {
-          // Server mode — legacy single-project format
           const data = await res.json();
           if (data.projects) {
             projects = data.projects;
@@ -720,8 +722,12 @@
             projects = [{ name: data.root, path: '', fileCount: flattenFiles(data.tree).length, dirCount: countDirs(data.tree), tree: data.tree }];
           }
           isStatic = false;
+          loaded = true;
         }
-      } catch {
+      } catch {}
+
+      // Fall back to static mode
+      if (!loaded) {
         const res = await fetch('tree.json');
         const data = await res.json();
         projects = data.projects || [];
