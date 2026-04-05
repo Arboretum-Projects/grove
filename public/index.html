@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grove</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+  <style>
+    :root {
+      --bg: #0e0e12;
+      --bg-surface: #16161d;
+      --bg-raised: #1e1e28;
+      --bg-hover: #262633;
+      --border: #2a2a3a;
+      --border-subtle: #1f1f2e;
+      --text: #d4d4e0;
+      --text-dim: #8888a0;
+      --text-faint: #55556a;
+      --accent: #7c6fea;
+      --accent-glow: #7c6fea33;
+      --accent-dim: #5a4fc7;
+      --green: #4ade80;
+      --amber: #f0b040;
+      --rose: #f07070;
+      --cyan: #40d0e0;
+      --sidebar-width: 300px;
+      --header-height: 52px;
+      --radius: 8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    /* ── Layout ─────────────────────────────── */
+    #app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: var(--header-height) 1fr;
+      height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    #header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+      z-index: 10;
+    }
+
+    #header .logo {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #header .logo svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    #breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-dim);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    #breadcrumb span {
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    #breadcrumb span:hover { color: var(--text); }
+    #breadcrumb span:last-child { color: var(--text); font-weight: 500; }
+
+    #breadcrumb .sep {
+      color: var(--text-faint);
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    #search-box {
+      margin-left: auto;
+      position: relative;
+    }
+
+    #search-box input {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px 6px 32px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s, width 0.2s;
+    }
+
+    #search-box input:focus {
+      border-color: var(--accent);
+      width: 300px;
+    }
+
+    #search-box svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: var(--text-faint);
+      pointer-events: none;
+    }
+
+    /* ── Sidebar ────────────────────────────── */
+    #sidebar {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 12px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 6px; }
+    #sidebar::-webkit-scrollbar-track { background: transparent; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .tree-group { margin-bottom: 2px; }
+
+    .tree-dir {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px 6px calc(12px + var(--depth, 0) * 16px);
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      user-select: none;
+      transition: background 0.12s, color 0.12s;
+      border-radius: 0;
+    }
+
+    .tree-dir:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .tree-dir .chevron {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.15s;
+      flex-shrink: 0;
+      color: var(--text-faint);
+    }
+
+    .tree-dir.collapsed .chevron { transform: rotate(-90deg); }
+    .tree-dir .dir-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .tree-children { overflow: hidden; }
+    .tree-dir.collapsed + .tree-children { display: none; }
+
+    .tree-file {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px 5px calc(12px + var(--depth, 0) * 16px);
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 13px;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tree-file:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .tree-file.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .tree-file .file-icon {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .tree-file .file-icon.md { color: var(--cyan); }
+    .tree-file .file-icon.yaml { color: var(--amber); }
+    .tree-file .file-icon.other { color: var(--text-faint); }
+
+    /* ── Content ─────────────────────────────── */
+    #content {
+      overflow-y: auto;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    #content::-webkit-scrollbar { width: 8px; }
+    #content::-webkit-scrollbar-track { background: transparent; }
+    #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Welcome screen ──────────────────────── */
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-faint);
+      gap: 16px;
+    }
+
+    #welcome svg { width: 64px; height: 64px; opacity: 0.3; }
+    #welcome p { font-size: 15px; }
+    #welcome .root-name { color: var(--text-dim); font-weight: 500; font-size: 18px; }
+
+    #welcome .stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    #welcome .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #welcome .stat .num { color: var(--accent); font-weight: 600; font-size: 20px; }
+
+    /* ── File header bar ─────────────────────── */
+    .file-header {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 5;
+      backdrop-filter: blur(12px);
+      background: rgba(14, 14, 18, 0.85);
+    }
+
+    .file-header .tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+    }
+
+    .file-header .tag.md { color: var(--cyan); border-color: #40d0e033; }
+    .file-header .tag.yaml { color: var(--amber); border-color: #f0b04033; }
+    .file-header .tag.other { color: var(--text-dim); }
+
+    .file-header .file-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ── YAML frontmatter ────────────────────── */
+    .frontmatter {
+      margin: 24px 32px 0;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .frontmatter .fm-key { color: var(--cyan); }
+    .frontmatter .fm-val { color: var(--text); }
+    .frontmatter .fm-str { color: var(--green); }
+    .frontmatter .fm-num { color: var(--amber); }
+    .frontmatter .fm-bool { color: var(--rose); }
+    .frontmatter .fm-null { color: var(--text-faint); font-style: italic; }
+    .frontmatter .fm-comment { color: var(--text-faint); }
+    .frontmatter .fm-indent { color: transparent; }
+
+    /* ── Rendered markdown ────────────────────── */
+    .rendered {
+      padding: 24px 32px 64px;
+      max-width: 860px;
+    }
+
+    .rendered h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #ececf4;
+      margin: 0 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .rendered h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #dcdce8;
+      margin: 32px 0 12px;
+    }
+
+    .rendered h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #c0c0d4;
+      margin: 24px 0 8px;
+    }
+
+    .rendered h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin: 20px 0 6px;
+    }
+
+    .rendered p { margin: 0 0 12px; }
+
+    .rendered strong { color: #ececf4; font-weight: 600; }
+    .rendered em { font-style: italic; color: var(--text-dim); }
+
+    .rendered a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .rendered a:hover { border-bottom-color: var(--accent); }
+
+    .rendered ul, .rendered ol {
+      margin: 0 0 12px;
+      padding-left: 24px;
+    }
+
+    .rendered li { margin: 2px 0; }
+    .rendered li::marker { color: var(--text-faint); }
+
+    .rendered hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    .rendered blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 12px 0;
+      padding: 8px 16px;
+      color: var(--text-dim);
+      background: var(--bg-raised);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .rendered code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--bg-raised);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    .rendered pre {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 12px 0 16px;
+    }
+
+    .rendered pre code {
+      background: none;
+      padding: 0;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* ── Tables ──────────────────────────────── */
+    .rendered table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 13px;
+    }
+
+    .rendered thead th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .rendered tbody td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+
+    .rendered tbody tr:hover { background: var(--bg-hover); }
+
+    .rendered tbody td strong { color: var(--text); }
+
+    /* ── YAML full-file rendering ────────────── */
+    .yaml-content {
+      padding: 24px 32px 64px;
+      max-width: 900px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .y-key { color: var(--cyan); }
+    .y-str { color: var(--green); }
+    .y-num { color: var(--amber); }
+    .y-bool { color: var(--rose); }
+    .y-null { color: var(--text-faint); font-style: italic; }
+    .y-comment { color: var(--text-faint); }
+    .y-punct { color: var(--text-faint); }
+    .y-anchor { color: var(--accent); }
+
+    /* ── Checkbox styling ────────────────────── */
+    .rendered input[type="checkbox"] {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-raised);
+      vertical-align: middle;
+      margin-right: 6px;
+      position: relative;
+      top: -1px;
+    }
+
+    .rendered input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ── Animations ──────────────────────────── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.2s ease-out; }
+
+    /* ── Search results ──────────────────────── */
+    .search-results {
+      padding: 8px 0;
+    }
+
+    .search-result-group {
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-faint);
+      margin-top: 4px;
+    }
+
+    /* ── Responsive ──────────────────────────── */
+    @media (max-width: 768px) {
+      :root { --sidebar-width: 0px; }
+      #sidebar { display: none; }
+      .rendered { padding: 20px 16px 64px; }
+      .frontmatter { margin: 16px 16px 0; }
+      .yaml-content { padding: 20px 16px 64px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        Grove
+      </div>
+      <div id="breadcrumb"></div>
+      <div id="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search files..." />
+      </div>
+    </header>
+    <nav id="sidebar"></nav>
+    <main id="content">
+      <div id="welcome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div class="root-name" id="root-name"></div>
+        <p>Select a file from the sidebar to view</p>
+        <div class="stats" id="stats"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const md = window.markdownit({
+      html: true,
+      linkify: true,
+      typographer: true,
+    });
+
+    // Customize link rendering for wiki-links [[...]]
+    const defaultRender = md.renderer.rules.text || function(tokens, idx) {
+      return md.utils.escapeHtml(tokens[idx].content);
+    };
+    md.renderer.rules.text = function(tokens, idx, options, env, self) {
+      const text = tokens[idx].content;
+      // Convert [[link|label]] or [[link]] to rendered text
+      return text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, link, label) => {
+        return `<em>${label || link}</em>`;
+      });
+    };
+
+    let treeData = [];
+    let allFiles = [];
+    let rootName = '';
+    let activeFilePath = null;
+
+    // ── Boot ──────────────────────────────────
+    async function init() {
+      const res = await fetch('/api/tree');
+      const data = await res.json();
+      treeData = data.tree;
+      rootName = data.root;
+
+      document.title = `Grove - ${rootName}`;
+      document.getElementById('root-name').textContent = rootName;
+
+      allFiles = flattenFiles(treeData);
+      const dirs = countDirs(treeData);
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><span class="num">${allFiles.length}</span> files</div>
+        <div class="stat"><span class="num">${dirs}</span> folders</div>
+      `;
+
+      renderTree(treeData, document.getElementById('sidebar'), 0);
+      setupSearch();
+    }
+
+    function flattenFiles(nodes) {
+      const files = [];
+      for (const node of nodes) {
+        if (node.type === 'file') files.push(node);
+        else if (node.children) files.push(...flattenFiles(node.children));
+      }
+      return files;
+    }
+
+    function countDirs(nodes) {
+      let count = 0;
+      for (const node of nodes) {
+        if (node.type === 'directory') {
+          count++;
+          if (node.children) count += countDirs(node.children);
+        }
+      }
+      return count;
+    }
+
+    // ── Tree rendering ────────────────────────
+    function renderTree(nodes, container, depth) {
+      for (const node of nodes) {
+        if (node.type === 'directory') {
+          const group = document.createElement('div');
+          group.className = 'tree-group';
+
+          const dir = document.createElement('div');
+          dir.className = 'tree-dir';
+          dir.style.setProperty('--depth', depth);
+          dir.innerHTML = `
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            <svg class="dir-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            <span>${node.name}</span>
+          `;
+          dir.onclick = () => dir.classList.toggle('collapsed');
+
+          const children = document.createElement('div');
+          children.className = 'tree-children';
+          renderTree(node.children, children, depth + 1);
+
+          group.appendChild(dir);
+          group.appendChild(children);
+          container.appendChild(group);
+        } else {
+          const file = document.createElement('div');
+          file.className = 'tree-file';
+          file.dataset.path = node.path;
+          file.style.setProperty('--depth', depth);
+
+          const ext = node.name.split('.').pop().toLowerCase();
+          const iconClass = ext === 'md' ? 'md' : (ext === 'yaml' || ext === 'yml') ? 'yaml' : 'other';
+
+          let iconSvg;
+          if (iconClass === 'md') {
+            iconSvg = `<svg class="file-icon md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg>`;
+          } else if (iconClass === 'yaml') {
+            iconSvg = `<svg class="file-icon yaml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l2 3 2-3"/><path d="M10 16v3"/></svg>`;
+          } else {
+            iconSvg = `<svg class="file-icon other" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>`;
+          }
+
+          file.innerHTML = `${iconSvg}<span>${node.name}</span>`;
+          file.onclick = () => loadFile(node.path);
+          container.appendChild(file);
+        }
+      }
+    }
+
+    // ── File loading ──────────────────────────
+    async function loadFile(filePath) {
+      activeFilePath = filePath;
+
+      // Update active state in sidebar
+      document.querySelectorAll('.tree-file').forEach(el => {
+        el.classList.toggle('active', el.dataset.path === filePath);
+      });
+
+      // Expand parent directories
+      const activeEl = document.querySelector(`.tree-file[data-path="${CSS.escape(filePath)}"]`);
+      if (activeEl) {
+        let parent = activeEl.parentElement;
+        while (parent && parent.id !== 'sidebar') {
+          if (parent.classList.contains('tree-children')) {
+            const dir = parent.previousElementSibling;
+            if (dir && dir.classList.contains('tree-dir')) {
+              dir.classList.remove('collapsed');
+            }
+          }
+          parent = parent.parentElement;
+        }
+        activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+
+      // Update breadcrumb
+      updateBreadcrumb(filePath);
+
+      // Fetch and render
+      const res = await fetch(`/api/file?path=${encodeURIComponent(filePath)}`);
+      const data = await res.json();
+      renderFile(data);
+    }
+
+    function updateBreadcrumb(filePath) {
+      const parts = filePath.split('/');
+      const bc = document.getElementById('breadcrumb');
+      bc.innerHTML = '';
+
+      const rootSpan = document.createElement('span');
+      rootSpan.textContent = rootName;
+      rootSpan.onclick = () => showWelcome();
+      bc.appendChild(rootSpan);
+
+      for (let i = 0; i < parts.length; i++) {
+        const sep = document.createElement('span');
+        sep.className = 'sep';
+        sep.textContent = '/';
+        bc.appendChild(sep);
+
+        const span = document.createElement('span');
+        span.textContent = parts[i];
+        if (i < parts.length - 1) {
+          // Could navigate to directory, but for now just label
+          span.style.cursor = 'default';
+        }
+        bc.appendChild(span);
+      }
+    }
+
+    function showWelcome() {
+      activeFilePath = null;
+      document.querySelectorAll('.tree-file').forEach(el => el.classList.remove('active'));
+      document.getElementById('breadcrumb').innerHTML = '';
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div id="welcome">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <div class="root-name">${rootName}</div>
+          <p>Select a file from the sidebar to view</p>
+          <div class="stats">
+            <div class="stat"><span class="num">${allFiles.length}</span> files</div>
+            <div class="stat"><span class="num">${countDirs(treeData)}</span> folders</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Rendering ─────────────────────────────
+    function renderFile(data) {
+      const content = document.getElementById('content');
+      const ext = data.ext.toLowerCase();
+      const fileName = data.path.split('/').pop();
+
+      if (ext === '.md') {
+        renderMarkdown(content, data.content, fileName);
+      } else if (ext === '.yaml' || ext === '.yml') {
+        renderYaml(content, data.content, fileName);
+      } else {
+        renderPlainText(content, data.content, fileName);
+      }
+
+      content.scrollTop = 0;
+    }
+
+    function renderMarkdown(container, raw, fileName) {
+      // Extract YAML frontmatter
+      let frontmatter = null;
+      let body = raw;
+
+      const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (fmMatch) {
+        frontmatter = fmMatch[1];
+        body = fmMatch[2];
+      }
+
+      let html = `<div class="fade-in">`;
+      html += `<div class="file-header"><span class="tag md">MD</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
+
+      if (frontmatter) {
+        html += `<div class="frontmatter">${highlightYaml(frontmatter)}</div>`;
+      }
+
+      html += `<div class="rendered">${md.render(body)}</div>`;
+      html += `</div>`;
+
+      container.innerHTML = html;
+
+      // Enable task list checkboxes (visual only)
+      container.querySelectorAll('li').forEach(li => {
+        const text = li.innerHTML;
+        if (text.startsWith('[ ] ')) {
+          li.innerHTML = `<input type="checkbox" disabled />${text.slice(4)}`;
+        } else if (text.startsWith('[x] ') || text.startsWith('[X] ')) {
+          li.innerHTML = `<input type="checkbox" checked disabled />${text.slice(4)}`;
+        }
+      });
+    }
+
+    function renderYaml(container, raw, fileName) {
+      let html = `<div class="fade-in">`;
+      html += `<div class="file-header"><span class="tag yaml">YAML</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
+      html += `<div class="yaml-content">${highlightYaml(raw)}</div>`;
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function renderPlainText(container, raw, fileName) {
+      let html = `<div class="fade-in">`;
+      html += `<div class="file-header"><span class="tag other">TXT</span><span class="file-name">${escapeHtml(fileName)}</span></div>`;
+      html += `<div class="yaml-content">${escapeHtml(raw)}</div>`;
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // ── YAML syntax highlighting ──────────────
+    function highlightYaml(text) {
+      return text.split('\n').map(line => {
+        // Comment lines
+        if (line.match(/^\s*#/)) {
+          return `<span class="y-comment">${escapeHtml(line)}</span>`;
+        }
+
+        // Key-value pairs
+        const kvMatch = line.match(/^(\s*)([\w][\w\-./]*)\s*(:)(.*)/);
+        if (kvMatch) {
+          const [, indent, key, colon, rest] = kvMatch;
+          return escapeHtml(indent) +
+            `<span class="y-key">${escapeHtml(key)}</span>` +
+            `<span class="y-punct">${colon}</span>` +
+            highlightYamlValue(rest);
+        }
+
+        // List items
+        const listMatch = line.match(/^(\s*)(- )(.*)/);
+        if (listMatch) {
+          const [, indent, dash, rest] = listMatch;
+          // Check if list item has a key
+          const itemKv = rest.match(/^([\w][\w\-./]*)\s*(:)(.*)/);
+          if (itemKv) {
+            return escapeHtml(indent) +
+              `<span class="y-punct">${dash}</span>` +
+              `<span class="y-key">${escapeHtml(itemKv[1])}</span>` +
+              `<span class="y-punct">${itemKv[2]}</span>` +
+              highlightYamlValue(itemKv[3]);
+          }
+          return escapeHtml(indent) +
+            `<span class="y-punct">${dash}</span>` +
+            highlightYamlValue(rest);
+        }
+
+        return escapeHtml(line);
+      }).join('\n');
+    }
+
+    function highlightYamlValue(val) {
+      if (!val || !val.trim()) return escapeHtml(val);
+
+      const trimmed = val.trim();
+      const leading = val.slice(0, val.length - val.trimStart().length);
+
+      // Quoted strings
+      if (/^".*"$/.test(trimmed) || /^'.*'$/.test(trimmed)) {
+        return escapeHtml(leading) + `<span class="y-str">${escapeHtml(trimmed)}</span>`;
+      }
+      // Numbers
+      if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+        return escapeHtml(leading) + `<span class="y-num">${escapeHtml(trimmed)}</span>`;
+      }
+      // Booleans
+      if (/^(true|false|yes|no)$/i.test(trimmed)) {
+        return escapeHtml(leading) + `<span class="y-bool">${escapeHtml(trimmed)}</span>`;
+      }
+      // Null
+      if (/^(null|~)$/i.test(trimmed)) {
+        return escapeHtml(leading) + `<span class="y-null">${escapeHtml(trimmed)}</span>`;
+      }
+      // Anchors/aliases
+      if (/^[&*]/.test(trimmed)) {
+        return escapeHtml(leading) + `<span class="y-anchor">${escapeHtml(trimmed)}</span>`;
+      }
+      // Inline comment
+      const commentIdx = trimmed.indexOf(' #');
+      if (commentIdx > 0) {
+        const before = trimmed.slice(0, commentIdx);
+        const comment = trimmed.slice(commentIdx);
+        return escapeHtml(leading) + highlightYamlValue(' ' + before).trim() + `<span class="y-comment">${escapeHtml(comment)}</span>`;
+      }
+      // Plain string values
+      if (trimmed.length > 0) {
+        return escapeHtml(leading) + `<span class="y-str">${escapeHtml(trimmed)}</span>`;
+      }
+
+      return escapeHtml(val);
+    }
+
+    // ── Search ────────────────────────────────
+    function setupSearch() {
+      const input = document.getElementById('search-input');
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        filterTree(q);
+      });
+
+      // Keyboard shortcut: Cmd/Ctrl+K
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          input.focus();
+          input.select();
+        }
+        if (e.key === 'Escape' && document.activeElement === input) {
+          input.value = '';
+          filterTree('');
+          input.blur();
+        }
+      });
+    }
+
+    function filterTree(query) {
+      const sidebar = document.getElementById('sidebar');
+
+      if (!query) {
+        // Show all
+        sidebar.querySelectorAll('.tree-file, .tree-group').forEach(el => {
+          el.style.display = '';
+        });
+        return;
+      }
+
+      // Hide non-matching files, show matching ones, expand their parents
+      sidebar.querySelectorAll('.tree-file').forEach(el => {
+        const name = el.querySelector('span').textContent.toLowerCase();
+        const path = el.dataset.path.toLowerCase();
+        const matches = name.includes(query) || path.includes(query);
+        el.style.display = matches ? '' : 'none';
+
+        if (matches) {
+          // Expand parent directories
+          let parent = el.parentElement;
+          while (parent && parent.id !== 'sidebar') {
+            if (parent.classList.contains('tree-children')) {
+              parent.style.display = '';
+              const dir = parent.previousElementSibling;
+              if (dir && dir.classList.contains('tree-dir')) {
+                dir.classList.remove('collapsed');
+                dir.style.display = '';
+              }
+            }
+            if (parent.classList.contains('tree-group')) {
+              parent.style.display = '';
+            }
+            parent = parent.parentElement;
+          }
+        }
+      });
+
+      // Hide empty directories
+      sidebar.querySelectorAll('.tree-group').forEach(group => {
+        const visibleFiles = group.querySelectorAll('.tree-file:not([style*="display: none"])');
+        if (visibleFiles.length === 0) {
+          group.style.display = 'none';
+        }
+      });
+    }
+
+    // ── Utility ───────────────────────────────
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ── Start ─────────────────────────────────
+    init();
+  </script>
+</body>
+</html>

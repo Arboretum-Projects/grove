@@ -1,0 +1,14 @@
+{
+  "name": "grove",
+  "version": "1.0.0",
+  "description": "A beautiful local file explorer and renderer for markdown, YAML, and text documents.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "bin": {
+    "grove": "./server.js"
+  },
+  "keywords": ["file-explorer", "markdown", "viewer", "documentation"],
+  "license": "MIT"
+}
