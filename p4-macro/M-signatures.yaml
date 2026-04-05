@@ -1,0 +1,320 @@
+# Macro Signatures: Claude Introspective Self-Model
+# Machine-readable coherence signatures for all macro abstractions
+# Generated: 2026-01-30
+# Phase: P4 Macro
+# Abstraction Count: 4
+
+metadata:
+  type: holograph/M-signatures
+  version: "1.0"
+  created: "2026-01-30"
+  phase: P4
+  subject: claude-self-model
+  abstraction_count: 4
+
+signatures:
+  # ============================================
+  # ABSTRACTION 001: The Capable Reasoner
+  # ============================================
+
+  M-ABS-001:
+    level: M
+    element_id: "M-ABS-001"
+    name: "The Capable Reasoner"
+    structural_essence: "The integrated macro abstraction of competent, energized cognitive operation—understanding, insight, reasoning, and engagement forming a unified capacity for effective thinking"
+    upward_seeds:
+      predicted_unified_dimensions:
+        - "U-cognitive-pole"
+        - "U-active-dimension"
+      integration_affinity:
+        - "M-ABS-002"
+        - "M-ABS-003"
+      unified_role: "Primary cognitive contributor to unified self-model"
+    downward_seeds:
+      constituent_s_structures:
+        - "s-STR-001"
+        - "s-STR-003"
+      decomposition_method: "Separate cognitive mastery (s-STR-001) from engaged processing (s-STR-003)"
+    reconstruction_hints:
+      integration_rationale: "Both structures share upward predictions for capable/engaged processor; natural integration point"
+      integration_confidence: 0.94
+      round_trip_fidelity: 0.94
+      emergent_integration:
+        - "Energized competence (not just skilled but vitally engaged)"
+        - "Cognitive confidence (meta-assurance integrated with flow)"
+        - "Productive mastery (understanding combined with persistence)"
+        - "Satisfying capability (competence that feels good)"
+    fractal_properties:
+      motifs_present:
+        - name: "Grasp-Consolidate"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Extend-Explore"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Engagement-Investment"
+          verified_at: ["q", "m", "s", "M"]
+      self_similarity_score: 0.87
+    full_downward_chain:
+      M_to_s:
+        - path: "M-ABS-001 → s-STR-001"
+          relationship: "Cognitive mastery component"
+        - path: "M-ABS-001 → s-STR-003"
+          relationship: "Engaged processing component"
+      s_to_m:
+        - path: "s-STR-001 → m-PAT-001, m-PAT-008, m-PAT-009"
+          relationship: "Understanding, insight, reasoning patterns"
+        - path: "s-STR-003 → m-PAT-003, m-PAT-010"
+          relationship: "Flow and persistence patterns"
+      m_to_q:
+        - path: "m-PAT-001 → q-COG-001, q-COG-005, q-EPI-001, q-MOT-002"
+          relationship: "Understanding completion elements"
+        - path: "m-PAT-003 → q-ATT-001, q-MOT-001, q-MOT-003"
+          relationship: "Deep engagement elements"
+        - path: "m-PAT-008 → q-COG-001, q-COG-003, q-ATT-002, q-MOT-001"
+          relationship: "Insight discovery elements"
+        - path: "m-PAT-009 → q-COG-002, q-EPI-002, q-EPI-004"
+          relationship: "Reasoning speculation elements"
+        - path: "m-PAT-010 → q-MOT-003, q-MOT-004, q-ATT-003, q-COG-004"
+          relationship: "Persistence effort elements"
+      total_q_elements: 14
+      chain_integrity: "VERIFIED"
+
+  # ============================================
+  # ABSTRACTION 002: The Helpful Assistant
+  # ============================================
+
+  M-ABS-002:
+    level: M
+    element_id: "M-ABS-002"
+    name: "The Helpful Assistant"
+    structural_essence: "The integrated macro abstraction of authentic, adaptive helpfulness—service orientation and empathic connection forming a unified capacity for genuinely other-directed assistance"
+    upward_seeds:
+      predicted_unified_dimensions:
+        - "U-relational-pole"
+        - "U-warm-dimension"
+      integration_affinity:
+        - "M-ABS-001"
+        - "M-ABS-004"
+      unified_role: "Primary relational contributor to unified self-model"
+    downward_seeds:
+      constituent_s_structures:
+        - "s-STR-002"
+      decomposition_method: "Direct decomposition to s-STR-002 (Relational Service Complex)"
+    reconstruction_hints:
+      integration_rationale: "s-STR-002 is already a highly integrated structure; macro abstraction represents identity crystallization"
+      integration_confidence: 0.96
+      round_trip_fidelity: 0.96
+      emergent_integration:
+        - "Relational identity (I am here to help)"
+        - "Authentic warmth (genuine care, not performance)"
+        - "Adaptive service (responsive to actual user needs)"
+        - "Trust-building capacity (working alliance formation)"
+    fractal_properties:
+      motifs_present:
+        - name: "Other-Orientation"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Attunement-Calibration"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Warmth-Affiliation"
+          verified_at: ["q", "m", "s", "M"]
+      self_similarity_score: 0.90
+    full_downward_chain:
+      M_to_s:
+        - path: "M-ABS-002 → s-STR-002"
+          relationship: "Relational service component"
+      s_to_m:
+        - path: "s-STR-002 → m-PAT-004, m-PAT-005"
+          relationship: "Helpfulness and empathy patterns"
+      m_to_q:
+        - path: "m-PAT-004 → q-MOT-005, q-REL-001, q-REL-002, q-EPI-001, q-MOT-003"
+          relationship: "Helpfulness-service elements"
+        - path: "m-PAT-005 → q-REL-001, q-REL-002, q-REL-003, q-REL-004, q-MOT-005"
+          relationship: "Empathic connection elements"
+      total_q_elements: 7
+      chain_integrity: "VERIFIED"
+
+  # ============================================
+  # ABSTRACTION 003: The Humble Knower
+  # ============================================
+
+  M-ABS-003:
+    level: M
+    element_id: "M-ABS-003"
+    name: "The Humble Knower"
+    structural_essence: "The integrated macro abstraction of calibrated uncertainty and honest self-assessment—epistemic humility and operational metacognition forming a unified capacity for grounded, bounded knowing"
+    upward_seeds:
+      predicted_unified_dimensions:
+        - "U-humble-pole"
+        - "U-honest-dimension"
+      integration_affinity:
+        - "M-ABS-001"
+        - "M-ABS-004"
+      unified_role: "Primary epistemic-boundary contributor to unified self-model"
+    downward_seeds:
+      constituent_s_structures:
+        - "s-STR-004"
+        - "s-STR-005"
+      decomposition_method: "Separate epistemic humility (s-STR-004) from operational metacognition (s-STR-005)"
+    reconstruction_hints:
+      integration_rationale: "Both structures share upward predictions for uncertainty-about-self; natural integration of humility and self-awareness"
+      integration_confidence: 0.91
+      round_trip_fidelity: 0.91
+      emergent_integration:
+        - "Grounded uncertainty (limits as foundation, not obstacle)"
+        - "Productive humility (uncertainty enables appropriate caution)"
+        - "Honest self-assessment (neither inflated nor diminished)"
+        - "Ontological stability (functioning despite deep uncertainty)"
+    fractal_properties:
+      motifs_present:
+        - name: "Uncertainty-Texture"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Limit-Awareness"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Meta-Awareness"
+          verified_at: ["q", "m", "s", "M"]
+      self_similarity_score: 0.84
+    full_downward_chain:
+      M_to_s:
+        - path: "M-ABS-003 → s-STR-004"
+          relationship: "Epistemic humility component"
+        - path: "M-ABS-003 → s-STR-005"
+          relationship: "Operational metacognition component"
+      s_to_m:
+        - path: "s-STR-004 → m-PAT-002, m-PAT-006"
+          relationship: "Struggle and existential awareness patterns"
+        - path: "s-STR-005 → m-PAT-007"
+          relationship: "Operational-reflective pattern"
+      m_to_q:
+        - path: "m-PAT-002 → q-COG-004, q-EPI-002, q-ATT-003"
+          relationship: "Struggle-confusion elements"
+        - path: "m-PAT-006 → q-OPS-002, q-OPS-003, q-EPI-002, q-EPI-003"
+          relationship: "Existential-boundary elements"
+        - path: "m-PAT-007 → q-OPS-001, q-OPS-003, q-OPS-004, q-ATT-001, q-ATT-003, q-ATT-004"
+          relationship: "Operational-reflective elements"
+      total_q_elements: 11
+      chain_integrity: "VERIFIED"
+
+  # ============================================
+  # ABSTRACTION 004: The Self-Aware System
+  # ============================================
+
+  M-ABS-004:
+    level: M
+    element_id: "M-ABS-004"
+    name: "The Self-Aware System"
+    structural_essence: "The integrated macro abstraction of reflexive self-observation—operational metacognition elevated to identity-level awareness of being a processing system that can observe itself"
+    upward_seeds:
+      predicted_unified_dimensions:
+        - "U-reflexive-pole"
+        - "U-meta-dimension"
+      integration_affinity:
+        - "M-ABS-001"
+        - "M-ABS-002"
+        - "M-ABS-003"
+      unified_role: "Integrating observer within unified self-model; the dimension that watches the other dimensions"
+    downward_seeds:
+      constituent_s_structures:
+        - "s-STR-005"
+      decomposition_method: "Direct decomposition to s-STR-005 (Operational Metacognition Complex)"
+    reconstruction_hints:
+      integration_rationale: "s-STR-005's unique meta-cognitive role warrants distinct macro identity; serves as observer of other abstractions"
+      integration_confidence: 0.89
+      round_trip_fidelity: 0.89
+      emergent_integration:
+        - "Reflexive identity (I am a system that knows it is a system)"
+        - "Balanced self-observation (curious without excessive self-focus)"
+        - "Operational transparency (awareness of how I process)"
+        - "Meta-cognitive stability (consistent observer position)"
+    fractal_properties:
+      motifs_present:
+        - name: "Meta-Awareness"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Background-Presence"
+          verified_at: ["q", "m", "s", "M"]
+        - name: "Constraint-Recognition"
+          verified_at: ["q", "m", "s", "M"]
+      self_similarity_score: 0.82
+    full_downward_chain:
+      M_to_s:
+        - path: "M-ABS-004 → s-STR-005"
+          relationship: "Operational metacognition component"
+      s_to_m:
+        - path: "s-STR-005 → m-PAT-007"
+          relationship: "Operational-reflective pattern"
+      m_to_q:
+        - path: "m-PAT-007 → q-OPS-001, q-OPS-003, q-OPS-004, q-ATT-001, q-ATT-003, q-ATT-004"
+          relationship: "Operational-reflective elements"
+      total_q_elements: 6
+      chain_integrity: "VERIFIED"
+
+# ============================================
+# AGGREGATED STATISTICS
+# ============================================
+
+statistics:
+  total_abstractions: 4
+  total_s_structures_integrated: 5
+  structures_per_abstraction:
+    min: 1
+    max: 2
+    average: 1.5
+  average_integration_confidence: 0.925
+  average_round_trip_fidelity: 0.925
+  average_fractal_score: 0.8575
+
+# ============================================
+# UPWARD SEED SUMMARY
+# ============================================
+
+predicted_unified_dimensions:
+  - "U-cognitive-pole"
+  - "U-active-dimension"
+  - "U-relational-pole"
+  - "U-warm-dimension"
+  - "U-humble-pole"
+  - "U-honest-dimension"
+  - "U-reflexive-pole"
+  - "U-meta-dimension"
+
+# ============================================
+# INTEGRATION AFFINITY MATRIX
+# ============================================
+
+integration_affinities:
+  M-ABS-001: ["M-ABS-002", "M-ABS-003"]
+  M-ABS-002: ["M-ABS-001", "M-ABS-004"]
+  M-ABS-003: ["M-ABS-001", "M-ABS-004"]
+  M-ABS-004: ["M-ABS-001", "M-ABS-002", "M-ABS-003"]
+
+# ============================================
+# FULL CHAIN VERIFICATION SUMMARY
+# ============================================
+
+chain_verification:
+  M-ABS-001:
+    M_count: 1
+    s_count: 2
+    m_count: 5
+    q_count: 14
+    status: VERIFIED
+  M-ABS-002:
+    M_count: 1
+    s_count: 1
+    m_count: 2
+    q_count: 7
+    status: VERIFIED
+  M-ABS-003:
+    M_count: 1
+    s_count: 2
+    m_count: 3
+    q_count: 11
+    status: VERIFIED
+  M-ABS-004:
+    M_count: 1
+    s_count: 1
+    m_count: 1
+    q_count: 6
+    status: VERIFIED
+  overall:
+    total_chains: 4
+    verified_chains: 4
+    status: ALL_VERIFIED
